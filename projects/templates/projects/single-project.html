@@ -34,7 +34,7 @@
                 <img class="singleProject__preview" src="{{ projectobj.profile_image.url }}" alt="portfolio thumbnail" />
                 <p>{{projectobj.owner.id}}</p>
                 <p>{{projectobj.id}}</p>
-                <a href="{% url 'user-profile' {{projectobj.owner.id}}  %}" class="singleProject__developer">{{projectobj.owner.name}}</a>
+                <a href="{% url 'user-profile' projectobj.owner.id  %}" class="singleProject__developer">{{projectobj.owner.name}}</a>
                 <h2 class="singleProject__title">{{projectobj.title}}</h2>
                 <h3 class="singleProject__subtitle">About the Project</h3>
                 <div class="singleProject__info">
