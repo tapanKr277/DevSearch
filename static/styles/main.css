@@ -1,0 +1,9 @@
+h1{
+    color: purple;
+}
+.current-page {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
