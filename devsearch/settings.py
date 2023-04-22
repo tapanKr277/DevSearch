@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
-from dotenv import load_dotenv
 import os
 
 
@@ -175,9 +174,8 @@ CORS_ALLOW_ALL_ORIGINS= True
 
 
 
-load_dotenv()
-USERNAME = os.getenv('USERNAME')
-PASSWORD = os.getenv('PASSWORD')
+USERNAME = 'samplesingh100@gmail.com'
+PASSWORD = 'nfigcvdrhhsworsj'
 
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST='smtp.gmail.com'
