@@ -2,10 +2,9 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import login,authenticate,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
-from .models import Profile,User
+from .models import Profile,User,Message
 from .utils import searchProjects,paginateProfiles
-from .forms import CustomUserCreationForm,ProfileForm,SkillForm
+from .forms import CustomUserCreationForm,ProfileForm,SkillForm,MessageForm
 
 # Create your views here.
 def loginUser(request):
@@ -14,7 +13,7 @@ def loginUser(request):
         return redirect('profiles')
     
     if request.method=='POST':
-        username=request.POST['username']
+        username=request.POST['username'].lower()
         password=request.POST['password']
         try:
             user=User.objects.get(username=username)
@@ -24,7 +23,7 @@ def loginUser(request):
 
         if user is not None:
             login(request,user)
-            return redirect('profiles')
+            return redirect(request.GET['next'] if 'next' in request.GET else 'account')
         else:
             messages.error(request,"Username OR password is incorrect")
     return render(request,'users/login_register.html')
@@ -36,7 +35,7 @@ def logoutUser(request):
 
 def registerUser(request):
     page='register'
-    form= CustomUserCreationForm()
+    form= CustomUserCreationForm() 
     if request.method=='POST':
         form=CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -53,7 +52,7 @@ def registerUser(request):
 
 def profiles(request):
     search_query,profiles=searchProjects(request)
-    custom_range,profiles=paginateProfiles(request,profiles,4)
+    custom_range,profiles=paginateProfiles(request,profiles,6)
     context={'profiles':profiles,'search_query':search_query,'custom_range':custom_range}   
     return render(request,'users/profiles.html',context)
 
@@ -126,3 +125,44 @@ def deleteSkill(request,pk):
         return redirect('account')
     context={'object':skill}
     return render(request,'delete_template.html',context)
+
+@login_required(login_url='login')
+def inbox(request): 
+    profile=request.user.profile
+    messageRequests=profile.messages.all()
+    unreadCount=messageRequests.filter(is_read=False).count()
+    context={'messageRequests':messageRequests,'unreadCount':unreadCount}
+    return render(request,'users/inbox.html',context)
+
+@login_required(login_url='login')
+def viewMessage(request,pk):
+    profile=request.user.profile
+    message=profile.messages.get(id=pk)
+    if message.is_read==False:
+        message.is_read=True
+        message.save()
+    context={'message':message}
+    return render(request,'users/message.html',context)
+
+
+def createMessage(request,pk):
+    recipient=Profile.objects.get(id=pk)
+    form=MessageForm()
+    try:
+        sender=request.user.profile
+    except:
+        sender=None
+    if request.method=="POST":
+        form=MessageForm(request.POST)
+        if form.is_valid():
+            message=form.save(commit=False)
+            message.sender=sender
+            message.recipient=recipient
+            if sender:
+                message.name=sender.name
+                message.email=sender.email
+            message.save()
+            messages.success(request,'Your message was sunccessfully sent!')
+            return redirect('user-profile',pk=recipient.id)
+    context={'recipient':recipient,'form':form}
+    return render(request,'users/message_form.html',context)

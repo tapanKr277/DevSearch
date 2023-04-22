@@ -1,7 +1,8 @@
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile,Skill
+from django import forms
+from .models import Profile,Skill,Message
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -10,6 +11,11 @@ class CustomUserCreationForm(UserCreationForm):
         labels={
             'first_name':'Name',
         }
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email address is already in use.")
+        return email    
 
     def __init__(self,*args,**kwargs):
         super(CustomUserCreationForm,self).__init__(*args,**kwargs)
@@ -38,6 +44,17 @@ class SkillForm(ModelForm):
 
     def __init__(self,*args,**kwargs):
         super(SkillForm,self).__init__(*args,**kwargs)
+
+        for name,field in self.fields.items():
+            field.widget.attrs.update({'class':'input'})
+
+class MessageForm(ModelForm):
+    class Meta:
+        model=Message
+        fields=['name','email','subject','body']
+    
+    def __init__(self,*args,**kwargs):
+        super(MessageForm,self).__init__(*args,**kwargs)
 
         for name,field in self.fields.items():
             field.widget.attrs.update({'class':'input'})
