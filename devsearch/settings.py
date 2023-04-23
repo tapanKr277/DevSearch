@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
-import os
 
 
 
@@ -127,6 +126,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'devsearch.wsgi.application'
 
 
+
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
@@ -174,15 +174,13 @@ CORS_ALLOW_ALL_ORIGINS= True
 
 
 
-USERNAME = 'samplesingh100@gmail.com'
-PASSWORD = 'nfigcvdrhhsworsj'
 
 EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
-EMAIL_HOST_USER=USERNAME
-EMAIL_HOST_PASSWORD=PASSWORD
+EMAIL_HOST_USER=os.environ.get("USERNAME")
+EMAIL_HOST_PASSWORD=os.environ.get("PASSWORD")
 
 
 STATIC_URL = 'static/'
