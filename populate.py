@@ -17,6 +17,20 @@ from users.signals import createProfile
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
+User = get_user_model()
+
+# Create superuser if not exists
+if not User.objects.filter(username='admin').exists():
+    user = User.objects.create_superuser(
+        username='admin',
+        email='admin@example.com',
+        password='adminpass123'
+    )
+    print("✅ Superuser created.")
+else:
+    user = User.objects.get(username='admin')
+    print("ℹ️ Superuser already exists.")
+
 # Disconnect the email signal before seeding
 post_save.disconnect(createProfile, sender=User)
 
