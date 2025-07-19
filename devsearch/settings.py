@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w88a--_g4a!+0r14q9=1s((pdyicqh^@n9#hqa6hd@hks#ct&4'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -175,21 +175,27 @@ CORS_ALLOW_ALL_ORIGINS= True
 
 
 
-EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER=os.environ.get("USERNAME")
-EMAIL_HOST_PASSWORD=os.environ.get("PASSWORD")
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get("EMAIL")
+EMAIL_HOST_PASSWORD = os.environ.get("PASSWORD")
 
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
 MEDIA_URL=''
-STATICFILES_DIRS=[
-    BASE_DIR/'static'   
-]
+# STATICFILES_DIRS=[
+#     BASE_DIR/'static'   
+# ]
 MEDIA_ROOT=os.path.join(BASE_DIR,'static/images')
-STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles')
+# STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles')
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
