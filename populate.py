@@ -4,35 +4,22 @@ import random
 from faker import Faker
 
 # Setup Django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'devsearch.settings')  # Change `your_project` to your project name
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'devsearch.settings')
 django.setup()
 
+from django.contrib.auth import get_user_model
 from users.models import Profile, Skill
 from projects.models import Project, Tag, Review
-from django.contrib.auth.models import User
-
-fake = Faker()
-
 from users.signals import createProfile
 from django.db.models.signals import post_save
-from django.contrib.auth.models import User
 
+# Use custom user model if defined
 User = get_user_model()
-
-# Create superuser if not exists
-if not User.objects.filter(username='admin').exists():
-    user = User.objects.create_superuser(
-        username='admin',
-        email='admin@example.com',
-        password='adminpass123'
-    )
-    print("✅ Superuser created.")
-else:
-    user = User.objects.get(username='admin')
-    print("ℹ️ Superuser already exists.")
 
 # Disconnect the email signal before seeding
 post_save.disconnect(createProfile, sender=User)
+
+fake = Faker()
 
 def create_profiles(n=20):
     profiles = []
