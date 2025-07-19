@@ -30,22 +30,26 @@ def project(request,pk):
 
 @login_required(login_url='login')
 def createProject(request):
-    profile=request.user.profile
-    form=ProjectForm()
-    if request.method=='POST':
-        newtags=request.POST.get('newtags').replace(',', ' ').split()
-        form=ProjectForm(request.POST,request.FILES)
+    profile = request.user.profile
+    form = ProjectForm()
+
+    if request.method == 'POST':
+        newtags = request.POST.get('newtags').replace(',', ' ').split()
+        form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
-            project=form.save(commit=False)
-            project.owner=profile
+            project = form.save(commit=False)
+            project.owner = profile
             project.save()
+
             for tag in newtags:
-                tag,created=Tag.objects.get_or_create(name=tag)
-                project.tags.add(tag)
-            messages.success(request,"Project was created successfully!")
+                tag_obj, created = Tag.objects.get_or_create(name=tag)
+                project.tags.add(tag_obj)
+
+            messages.success(request, "Project was created successfully!")
             return redirect('projects')
-    context={'form':form,'project':project}
-    return render(request,'projects/project-form.html',context)
+
+    context = {'form': form}
+    return render(request, 'projects/project-form.html', context)
 
 @login_required(login_url='login')
 def updateProject(request,pk):
